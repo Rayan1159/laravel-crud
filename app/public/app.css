@@ -1,0 +1,60 @@
+:root {
+    --html-font: 'Courier New', Courier, monospace;
+    --text-color: white;
+    --border-color: solid gray;
+    --body-background: repeating-linear-gradient(to bottom, yellow, rgb(79, 85, 4));
+    --form-background: rgb(126, 108, 1);
+    --button-background: red;
+}
+
+html {
+    height: 100%;
+    font-family: var(--html-font);
+}
+
+body {
+    margin: 0 auto;
+    border: none;
+    background: var(--body-background)
+}
+
+::placeholder {
+    text-align: center;
+    color: var(--text-color);
+}
+
+.container {
+    padding-top: 17.5%;
+    color: var(--text-color);
+}
+
+.container .form {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 35%;
+    text-align: center;
+    background: var(--form-background);
+    border-radius: 25px;
+    padding-top: 3%;
+    padding-bottom: 3%;
+}
+
+.form-input {
+    padding-bottom: 2%;
+}
+
+.form-button button {
+    border: none;
+    color: white;
+    padding-right: 15%;
+    padding-left: 15%;
+    background: var(--button-background);
+}
+
+.container .form .form-input input {
+    background: inherit;
+    border: var(--border-color);
+}
+
+
