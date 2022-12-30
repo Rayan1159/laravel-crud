@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Doctrine\DBAL\Schema\Exception\ColumnDoesNotExist;
+use http\Env\Response;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -12,88 +15,41 @@ class CrudController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index(Request $request)
+    public function login(Request $request): ?JsonResponse
     {
-        $username = $request->post("username");
-        if ($username) {
-            try {
-                $user = User::where(['username', $username])->first();
-                return response()->json([
-                    "status" => "ok"
-                ]);
-            } catch (QueryException $exception) {
-                return response()->json([
-                    "info" => $exception->errorInfo
+        $validated = $request->validate([
+            "username" => "required",
+            "password" => "required"
+        ]);
+
+        if ($validated) {
+            $username = $request->post("username");
+            $userData = \UserUtil::findUser($username);
+            if (\UserUtil::verifyPassword($request->post("password"), $userData->password)) {
+                return \response("")->json([
+                    'status' => "ok"
                 ]);
             }
         }
+        return null;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+    public function register(Request $request) {
+        $validated = $request->validate([
+            "username" => ["required", "min:4"],
+            "password" => ["required", "min:8"]
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        if ($validated) {
+            $username = $request->post("username");
+            $password = Hash::make($request->post("password"));
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            return \response()->json([
+                "user" => \UserUtil::registerUser($username, $password)
+            ]);
+        }
     }
 }
